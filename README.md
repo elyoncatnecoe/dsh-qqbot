@@ -2,6 +2,8 @@
 
 在 QQ 私聊和群聊里对话 DeepSeek Harness 的机器人插件。基于官方插件 [`@tencent-connect/dsh-qqbot`](https://github.com/tencent-connect/dsh-qqbot) 的独立分支（MIT），**可与官方插件共存**（entry id 不同）。
 
+**[English](README_EN.md) | 简体中文**
+
 ## 四个特点
 
 1. **会说话**：内置 TTS 与变调（纯 JS，不用 ffmpeg、不用另装插件），`/voice loli` 一句话换音色。
