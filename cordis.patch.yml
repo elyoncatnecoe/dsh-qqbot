@@ -1,23 +1,18 @@
-# dsh-im-qqbot bundle patch
+# dsh-qqbot-plus bundle patch
 #
-# 当本包通过 `dsh plugin --profile <name> add @tencent-connect/dsh-qqbot` 安装后，
-# dsh 启动时自动加载此 patch。
+# 安装后 dsh 启动时自动加载。凭据来自扫码绑定或下面的环境变量：
+#   QQBOT_APPID  - QQ 机器人 AppID
+#   QQBOT_SECRET - QQ 机器人 AppSecret
 #
-# 环境变量：
-#   QQBOT_APPID  - QQ Bot AppID（必填）
-#   QQBOT_SECRET - QQ Bot AppSecret（必填）
-#
-# 叠加顺序：dsh-base → 本 bundle patch → profile cordis.patch.yml → --patch
+# 与官方插件 @tencent-connect/dsh-qqbot 互不冲突：entry id 用 im-qqbot-plus。
 
-# ── 插入 im-qqbot 插件行 ──
 - insert:
-    - id: im-qqbot
-      name: '@tencent-connect/dsh-qqbot'
+    - id: im-qqbot-plus
+      name: 'dsh-qqbot-plus'
       config:
         appId: __FROM_ENV__
         appSecret: __FROM_ENV__
-        # provider/model 留空：从宿主默认模型路由继承
-        # 用户可通过 /model 命令在聊天中切换
+        # provider/model 留空：继承宿主默认模型；用户可用 /model 在聊天里切
         requireMention: true
         textChunkLimit: 4500
         sessionIdleTimeout: 1800000
@@ -25,3 +20,55 @@
         processingTimeoutMs: 1800000
         historyLimit: 10
         debug: false
+        # ── 人格套装（音色 + 形象 + prompt 一起切换）──
+        persona:
+          id: female        # female=少女·萝莉音 / male=少年·暗潮音
+          name: Deepseek    # 机器人名字，用户可改
+        # ── 语音 ──
+        voice:
+          enabled: true
+          voiceId: stella
+          semitones: 2      # 2=萝莉（默认）
+          mirrorToOwner: false
+          maxChars: 300
+        # ── 表情包：不填 dir 就用包内自带套组 ──
+        sticker:
+          enabled: true
+        # ── 带图 @ 时偶尔复读同一张图 ──
+        echo:
+          enabled: true
+          probability: 0.5
+          cooldownMs: 600000
+          maxBytes: 2097152
+        # ── 识图（可选，默认关闭）──
+        # 用 DSH 里已有的、支持图片输入的模型即可，不需要额外申请 key：
+        # vision:
+        #   enabled: true
+        #   provider: <你 DSH 里的 provider 名>
+        #   model: <该 provider 下 input 含 image 的模型 id>
+        #
+        # 想接腾讯混元视觉（单价低、常有免费额度）则自己加一个 provider：
+        #   baseURL: https://api.hunyuan.cloud.tencent.com/v1
+        #   apiKeyEnv: HUNYUAN_API_KEY   # 需要自行申请；不填不影响其它功能
+        # 然后把 vision.provider 填成该 provider 名、vision.model 填 hunyuan-vision。
+        #
+        # 备注：HUNYUAN_API_KEY 只在上游的 cordis.yml（开发编排示例）里出现，
+        # 安装态不读取它；不填也不影响语音/文字/表情包。
+        # ── 会话记忆 ──
+        memory:
+          enabled: true
+          injectLimit: 12
+          retentionDays: 30
+        # ── 群聊分段首发（缩短首字等待）──
+        groupStream:
+          enabled: true
+          firstChars: 60
+          maxSegments: 3
+          minIntervalMs: 800
+        # ── 被 @ 后在窗口内随机补几句 ──
+        proactive:
+          enabled: true
+          minDelayMs: 30000
+          maxDelayMs: 240000
+          maxNudgesPerWindow: 3
+          onlyWhenSilent: false

@@ -1,11 +1,12 @@
+# 依赖与构建产物
 node_modules/
-dist/
-docs/
-.env
-.dsh-sessions/
-*.tsbuildinfo
-cordis.dev.yml
+pnpm-lock.yaml
+package-lock.json
 
-# lib/ 构建产物入库（GitHub 安装开箱即用），但排除类型与 sourcemap
-lib/**/*.d.ts
-lib/**/*.map
+# 本地运行数据（绝不能进仓库）
+.dsh-qqbot-plus/
+*.log
+
+# 系统
+.DS_Store
+Thumbs.db

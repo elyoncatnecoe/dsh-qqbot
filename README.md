@@ -1,277 +1,96 @@
-<div align="center">
+# dsh-qqbot-plus
 
-<img width="120" src="https://img.shields.io/badge/🤖-QQ_Bot-blue?style=for-the-badge" alt="QQ Bot" />
+在 QQ 私聊和群聊里对话 DeepSeek Harness 的机器人插件。基于官方插件 [`@tencent-connect/dsh-qqbot`](https://github.com/tencent-connect/dsh-qqbot) 的独立分支（MIT），**可与官方插件共存**（entry id 不同）。
 
-**基于 [deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) (dsh) 的 QQ Bot 插件，将 DeepSeek AI 助手接入 QQ 私聊与群聊。**
+## 四个特点
 
-[![npm version](https://img.shields.io/npm/v/@tencent-connect/dsh-qqbot)](https://www.npmjs.com/package/@tencent-connect/dsh-qqbot)
-[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/tencent-connect/dsh-qqbot)](https://github.com/tencent-connect/dsh-qqbot)
-[![QQ Bot](https://img.shields.io/badge/QQ_Bot-API_v2-red)](https://bot.q.qq.com/wiki/)
+1. **会说话**：内置 TTS 与变调（纯 JS，不用 ffmpeg、不用另装插件），`/voice loli` 一句话换音色。
+2. **会主动找你**：私聊可以不定时主动推送（群聊做不到，平台关闭了群主动消息），`/remind 09:00 吃药` 即可安排。
+3. **一条指令换人格卡**：`/persona female` / `/persona male`，音色、形象图、人格文案整套切换，按会话独立。
+4. **记得聊过什么**：对话落盘成记忆，重启后接着聊，群/私聊各自一份。
 
-<br/>
+> **装完不会用，或者想按自己的风格微调，直接回 DSH 里问助手**——它能读这个包的配置和文档，比翻 README 快。别自己硬猜参数。
 
-**[English](./README_EN.md) | 简体中文**
+## 比官方插件多了什么
 
-扫码加入 QQ 群 / 频道
-
-<table>
-<tr>
-<td align="center" width="50%"><img src="./assets/docs/qqgroup.jpg" height="360" alt="QQ 群二维码" /><br /><b>QQ 开发者交流群</b><br /><sub>1群: 1032635674 · 2群: 1056948758</sub></td>
-<td align="center" width="50%"><img src="./assets/docs/qqchannel.jpg" height="360" alt="QQ 频道二维码" /><br /><b>QQ 开发者社区频道</b><br /><sub>频道号: 20dnumts4z</sub></td>
-</tr>
-</table>
-
-</div>
-
-## 架构
-
-```
-QQ 用户 → QQ WebSocket → dsh-qqbot → ctx.agents → dsh agent loop → LLM
-                                 ↑                           │
-                                 └── session/event ──────────┘
-                                       (assistant reply → QQ sendMarkdown)
-```
+| 能力 | 说明 |
+|---|---|
+| **语音 + 换音色** | 内置 TTS 与变调（纯 JS，无需 ffmpeg、无需额外插件）。`/voice loli` 一句话换声音，7 种预设 |
+| **人格套装** | 一个套装 = 音色 + 形象图 + 人格 prompt，`/persona female` 整套切换 |
+| **表情包** | 内置 7 张套组，`qqbot_sticker` 按情绪标签挑图；装完即用，不用配置路径 |
+| **定时主动私聊** | 到点主动发你私聊，不需要你先说话。`/remind 09:00 吃药` 即可，也可让模型用 `qqbot_push` 推内容。群聊主动被平台关闭，见 [docs/PROACTIVE-DM.zh-CN.md](docs/PROACTIVE-DM.zh-CN.md) |
+| **表情复读** | 有人带图 @ 时，按概率把那张图发回去（不是每次都复读，可调参） |
+| **会话记忆** | 把对话落盘并在后续注入，跨重启保留 |
+| **群聊分段首发** | 长回复先发一小段，缩短首字等待（群聊没有流式接口） |
+| **窗口内主动补话** | 被 @ 后在 5 分钟被动窗口里随机补几句，看起来像在聊 |
 
 ## 安装
 
-### 方式一：桌面版安装（推荐）
+见 [docs/INSTALL.zh-CN.md](docs/INSTALL.zh-CN.md)（含注册机器人、扫码绑定全流程）。
 
-无需命令行，全程在应用内完成：
+最短路径：DSH 左侧「插件」→「添加插件」→ 输入本包名或本地目录 → 安装 → 设置页扫码绑定。
 
-1. **安装**：左侧栏点击「插件」→「添加插件」→ 输入 `@tencent-connect/dsh-qqbot@latest` → 安装并立即启动
+**不挑位置**：装到任意盘、任意目录都可以（Windows / macOS / Linux 通用），插件内部路径都相对包自身或用户主目录解析。
 
-<img src="./assets/docs/install.png" alt="端内添加插件" width="560" />
+## 功能依赖（装之前先看）
 
-2. **连接**：左下角头像 → 设置 →「QQ 机器人」→ 手机 QQ 扫码连接
+插件免费，但两项功能依赖外部服务：
 
-<img src="./assets/docs/setting.png" alt="设置页扫码连接" width="560" />
+| 功能 | 依赖 | 缺了会怎样 |
+|---|---|---|
+| 文字聊天 | 无（用 DSH 已登录的模型） | — |
+| **语音 / 换音色** | **DeepSeek 官方 API Key**（TTS 按字符计费） | 语音发不出，文字正常 |
+| **识图** | 自己在 `vision.provider` / `vision.model` 填一个支持图片输入的模型 | 识图不可用 |
+| 表情包 / 记忆 / 复读 | 无 | — |
 
-扫码成功后凭据自动保存，后续启动无需再次扫码。
+语音 Key 的读取顺序：环境变量 `DEEPSEEK_API_KEY` → `~/.dsh/.credentials.yaml`。在 DSH 里用 DeepSeek 账号登录即可自动具备。
 
-### 方式二：手动执行
+## 常用指令
 
-```bash
-# 安装到 profile
-npx @deepseek-ai/dsh plugin --profile qqbot add @tencent-connect/dsh-qqbot
+| 指令 | 作用 |
+|---|---|
+| `/voice` | 列出音色，点按钮或 `/voice loli` 切换 |
+| `/voice open` | 主人放开权限，让其他人也能换 |
+| `/persona` | 列出人格套装，`/persona male` 一键换音色+形象+prompt |
+| `/remind 09:00 吃药` | 定时主动私聊提醒；`/remind list` 查看、`/remind off` 暂停 |
+| `/prompt` | 查看当前人格文案；`/prompt male` 切换、`/prompt show female` 只看不切 |
+| `/bot-me` | 查看自己的 OpenID（填 `owner.openid` 用） |
+| `/new` `/compact` `/model` `/preset` `/stop` `/bot-status` `/bot-help` | 与官方插件一致 |
 
-# 启动
-npx @deepseek-ai/dsh --profile qqbot
+音色/人格**按会话独立**：群里换成长少年不会影响私聊。
+
+## 主要配置
+
+见 `cordis.patch.yml`，或设置页。常改的几项：
+
+```yaml
+persona: { id: female, name: Deepseek }   # female=少女·萝莉音 / male=少年·暗潮音
+voice:   { voiceId: stella, semitones: 2 } # 2=萝莉、0=原声、-3=中性
+echo:    { probability: 0.5, cooldownMs: 600000 }
+memory:  { enabled: true, injectLimit: 12, retentionDays: 30 }
+proactive: { enabled: true, maxNudgesPerWindow: 3 }
 ```
 
-首次启动时，插件检测到凭据未配置会自动进入扫码引导：终端输出二维码 → 手机 QQ 扫码绑定 → 凭据自动保存到 profile，后续启动无需再次扫码。
+## 已知限制（平台侧，不是插件问题）
 
-无端内绑定页的环境（如纯 CLI）可设置 `QQBOT_BIND_OPEN_BROWSER=1`，额外拉起系统浏览器扫码页作为降级通道。
+- **群里只有被 @ 才会收到消息**，所以「复读整群」「全群记忆」都做不到。
+- **群主动推送已关闭**（`40034105`），冷场破冰不可能；只能被动回复。
+- 媒体（语音/图片/文件）基本只能在被动窗口内发：群 5 分钟、私聊 60 分钟。
+- QQ 头像只能去 [q.qq.com](https://q.qq.com) 控制台换，没有 API。
+- 无法撤回他人消息、踢人、禁言、改群资料、拉历史消息。
 
-<img src="./assets/docs/qrcode.png" alt="二维码扫码示意图" width="280" />
+细节见 [docs/FEATURES.zh-CN.md](docs/FEATURES.zh-CN.md) 和 [docs/TROUBLESHOOTING.zh-CN.md](docs/TROUBLESHOOTING.zh-CN.md)。
 
-> **提示**：建议升级至 `0.4.0` 以上版本扫码，支持点击链接在浏览器打开，避免部分终端二维码渲染错位的问题。
-
-### 方式三：本地路径安装
-
-```bash
-# 构建
-cd /path/to/dsh-qqbot
-pnpm install && pnpm build
-
-# 安装到 profile（本地路径）
-npx @deepseek-ai/dsh plugin --profile qqbot add /path/to/dsh-qqbot
-
-# 启动
-export QQBOT_APPID="你的AppID" QQBOT_SECRET="你的AppSecret"
-npx @deepseek-ai/dsh --profile qqbot
-```
-
-### 方式四：--patch 开发模式
-
-```bash
-export QQBOT_APPID="你的AppID" QQBOT_SECRET="你的AppSecret"
-npx @deepseek-ai/dsh web --patch /path/to/dsh-qqbot/cordis.dev.yml
-```
-
-## 配置项
-
-| 配置 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `appId` | string | **必填** | QQ Bot AppID（或通过 `QQBOT_APPID` 环境变量） |
-| `appSecret` | string | **必填** | QQ Bot AppSecret（或通过 `QQBOT_SECRET` 环境变量） |
-| `provider` | string | `deepseek-official` | LLM 提供商名称 |
-| `model` | string | `deepseek-chat` | 模型名称 |
-| `preset` | string | - | Agent preset id |
-| `cwd` | string | `process.cwd()` | Agent 工作目录 |
-| `requireMention` | boolean | `true` | 群聊是否需要 @bot 才触发 |
-| `groupPrompt` | string | - | 群聊额外 system prompt |
-| `directPrompt` | string | - | 私聊额外 system prompt |
-| `textChunkLimit` | number | `4500` | 单条消息最大字符数 |
-| `streaming` | boolean | `true` | 是否启用流式输出（群聊始终不启用） |
-| `sessionIdleTimeout` | number | `1800000` | 会话闲置超时(ms)，默认 30 分钟；`<=0` 表示不回收 |
-| `processingTimeoutMs` | number | `1800000` | 处理超时(ms)，超时中断当前 LLM 调用 |
-| `maxQueue` | number | `20` | 并发队列最大长度 |
-| `historyLimit` | number | `10` | 群历史缓冲条数 |
-| `askTimeoutMs` | number | `300000` | 待答问题超时(ms)，默认 5 分钟（ask_user_question） |
-| `showToolResults` | boolean | `false` | 是否展示工具调用成功结果（错误始终展示） |
-| `debug` | boolean | `false` | 调试模式 |
-
-### 访问控制（access）
-
-| 配置 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `access.c2cMode` | `open`/`allowlist`/`disabled` | `open` | 私聊访问模式 |
-| `access.c2cAllow` | string[] | `[]` | 私聊白名单（user openid） |
-| `access.groupMode` | `open`/`allowlist`/`disabled` | `open` | 群聊访问模式 |
-| `access.groupAllow` | string[] | `[]` | 群聊白名单（group openid） |
-| `access.commandMode` | `open`/`allowlist`/`disabled` | `open` | QQ 斜杠命令模式，白名单按发送者 OpenID 独立校验 |
-
-QQ 斜杠命令与群聊、私聊共用“所有人／白名单／关闭”模式：先按接入规则进入对话，再按发送者身份校验命令；审批和提问按钮沿用各自鉴权。命令白名单保存在独立的身份文件中，切换模式不影响名单。
-
-三类名单（私聊、群、命令）均支持三种添加方式：**配对码**、**手动按 OpenID 批量添加**、**导出/复制**。注意 OpenID 不是 QQ 号或群号；拿不到 OpenID 时用配对码添加。
-
-- **配对码**：在账号设置中生成，让用户在对应对话里直接发给机器人即可加入名单。同一码可连续添加多人，错误场景（群码发到私聊等）不影响其有效性。
-- **撤销语义**：移除身份后，移除前生成的同类配对码不能将其重新加回，重新授权需生成新码；其余人仍可继续认领。
-
-配置接口的 GET 返回 `config.accessRevision`，更新 `access` 时应一并提交该值；名单或模式已变化时返回 409，不覆盖现有授权。
-
-### 主动推送（proactiveDelivery）
-
-QQ 入站触发的回合始终被动回复；定时任务等服务回合始终主动推送到 QQ。下表只控制「非 QQ 输入（如桌面续聊 QQ 会话）」的回合：
-
-| 配置 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `proactiveDelivery.externalTurns` | `off`/`c2c`/`all` | `c2c` | `off` 不推送；`c2c` 仅推送私聊；`all` 私聊和群聊都推送 |
-
-### 富媒体理解（media）
-
-| 配置 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `media.enabled` | boolean | `true` | 是否启用富媒体理解（图片/视频下载 + 工具分析） |
-| `media.maxMB` | number | `200` | 富媒体下载大小上限(MB) |
-| `media.ttlHours` | number | `24` | 富媒体存活时长(小时)，0=永不过期 |
-
-### 视觉理解（vision）
-
-| 配置 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `vision.enabled` | boolean | `false` | 是否启用视觉理解（qqbot_describe_image 工具） |
-| `vision.provider` | string | - | 视觉模型 provider（如 pi-ai） |
-| `vision.model` | string | - | 视觉模型 id（如 qwen-vl-max） |
-| `vision.maxBytes` | number | `10MB` | 图片字节上限 |
-| `vision.maxTokens` | number | `1024` | 输出 token 上限 |
-| `vision.timeoutMs` | number | `120000` | 视觉调用超时(ms) |
-
-### 附件发送（sendFile）
-
-| 配置 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `sendFile.restrictPaths` | boolean | `true` | 是否启用路径白名单（仅 media + cwd + extraRoots） |
-| `sendFile.extraRoots` | string[] | `[]` | 额外允许访问的根目录 |
-
-## 内置命令
-
-| 命令 | 说明 |
-|------|------|
-| `/new`（别名 `/reset` `/clear`） | 开始新会话（清空上下文） |
-| `/compact` | 压缩会话历史（摘要替换旧记录，保留上下文） |
-| `/model` | 查看或切换模型 |
-| `/preset` | 查看或切换 agent preset（新会话生效） |
-| `/stop` | 中止当前生成 |
-| `/bot-ping` | 网络延迟检测（返回传输与处理耗时） |
-| `/bot-version` | 查看版本信息 |
-| `/bot-status` | 查看当前会话状态 |
-| `/bot-help` | 查看所有指令 |
-
-## 核心模块
+## 目录
 
 ```
-src/
-├── index.ts                    # Cordis 插件入口（async apply）
-├── config.ts                   # 配置 Schema
-├── types.ts                    # 全局类型定义
-├── setup/                      # 凭据绑定（扫码）
-│   ├── index.ts                # 绑定编排（ensureCredentials）
-│   ├── binding-service.ts      # 扫码状态机（宿主内唯一事实源）
-│   ├── bind-routes.ts          # 端内绑定页路由（/qqbot/im-qqbot/bind）
-│   ├── presenters.ts           # 呈现策略（终端/浏览器降级）
-│   ├── qr-svg.ts               # 二维码 SVG 渲染（宿主侧）
-│   └── persist.ts              # 凭据写入 cordis.patch.yml
-├── client/                     # 浏览器半边（dsh.client Web Bundle）
-│   ├── index.ts                # 侧栏 Tab 注册 + 待绑定自动引导
-│   └── bind-page.ts             # 端内绑定页（二维码 + 状态轮询）
-├── gateway/                    # 网关装配
-│   ├── bootstrap.ts            # 启动装配（监听 session/event 等）
-│   └── middleware-setup.ts     # 中间件链配置
-├── transport/                  # 传输层
-│   ├── inbound.ts              # QQ 入站消息 → agent.followup()
-│   ├── outbound.ts             # session/event → QQ sendMarkdown
-│   ├── outbound-buffer.ts      # 流式缓冲
-│   ├── streaming-writer.ts     # 流式写入
-│   ├── reply-target.ts         # 回复目标解析
-│   ├── msgid-cache.ts          # 被动回复 msgid 缓存
-│   ├── reply-limiter.ts        # 被动回复限流
-│   ├── tool-presenter.ts       # 工具调用展示
-│   └── chunker.ts              # Markdown 文本切分
-├── session/                    # 会话管理层
-│   ├── session-manager.ts      # QQ peer → Agent 映射
-│   └── idle-evictor.ts         # 闲置回收
-├── model/                      # 模型路由层
-│   ├── model-resolver.ts       # 路由解析
-│   ├── prefs-store.ts          # per-peer 偏好持久化
-│   └── settings-reader.ts      # settings.yaml 只读
-├── features/                   # 交互特性
-│   ├── question-channel.ts     # ask_user_question 问答通道
-│   ├── approval-channel.ts     # approval 审批确认通道
-│   └── answer-parser.ts        # 答案解析
-├── media/                      # 多媒体
-│   ├── vision-tool.ts          # 图片视觉理解
-│   ├── send-file-tool.ts       # 发送本地文件
-│   └── media-cleaner.ts        # 媒体 TTL 清理
-├── middleware/                 # 中间件
-│   ├── question-answer.ts      # 问答答案处理
-│   └── attachment.ts           # 附件处理
-├── shared/                     # 共享工具
-│   ├── utils.ts                # 通用函数
-│   ├── scope.ts                # scope/peer 提取
-│   └── send-helper.ts          # 分块发送
-└── commands/                   # 斜杠命令
-```
-
-## 会话路由
-
-sessionKey: `qqbot:${appId}:${scope}:${peerId}`，新会话铸造 UUID 会话 id 并持久化到 `model-prefs.json`，重启后按持久化 id 恢复；0.5.x 老会话按原派生 id 沿用。
-
-解析策略：进程内复用 → 持久化恢复 → 全新创建。
-
-QQ 群聊和私聊的补充提示词按当前 Agent 作用域加载，恢复会话时继续使用对应场景的配置。
-
-## 设计原则
-
-- **纯 Cordis 插件** — 遵循 dsh "Plugins, not loop changes" 原则
-- **声明式依赖** — `inject = ['agents']`，不直接耦合其他插件
-- **会话隔离** — 每个 QQ 私聊用户/群聊各一个独立 Agent
-- **Preset 支持** — 可通过 `agent-presets` 服务挂载预设（工具集、prompt 等）
-- **闲置回收** — 超时自动 dispose Agent，防止内存泄漏（回收后仍可按会话映射主动推送）
-- **Markdown 输出** — 回复以 Markdown 格式发送，支持代码块/表格感知切分
-- **图片理解** — 支持 `qqbot_describe_image` 视觉理解，可分析用户发送的图片
-- **附件发送** — 支持 `qqbot_send_file` 将本地文件发送给用户（默认启用路径白名单）
-- **问答互动** — 支持 `ask_user_question`，单选生成内联按钮（点一个其余变灰）、多选回复编号，逐题推进 + 问题级超时
-- **操作确认** — 支持 `approval/request`，关键操作通过「允许/拒绝」按钮请求用户确认
-
-## 本地开发
-
-```bash
-# 安装依赖
-pnpm install
-
-# 构建
-pnpm build
-
-# 开发模式（watch）
-pnpm dev
-
-# 用 --patch 方式调试
-export QQBOT_APPID="xxx" QQBOT_SECRET="xxx"
-npx @deepseek-ai/dsh web --patch /path/to/dsh-qqbot/cordis.dev.yml
+lib/               插件实现（fork + 新增特性）
+assets/stickers/   内置表情包（自绘，MIT）
+prompts/           人格 prompt 模板（{{name}} 占位）
+docs/              安装、平台、特性、排错
 ```
 
 ## License
 
-[MIT](./LICENSE)
+MIT。保留上游 `@tencent-connect/dsh-qqbot` 的版权声明，新增部分同样以 MIT 发布。
+`assets/icons/` 下的图标沿用上游包内资源；`assets/stickers/` 的 7 张表情为作者自绘，见该目录下 `LICENSE.md`。

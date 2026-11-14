@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "QQ Bot (dsh-qqbot)",
-    "description": "Chat with DeepSeek Harness in QQ private and group chats."
+    "title": "QQ Bot Plus",
+    "description": "Chat with DeepSeek Harness in QQ private and group chats: built-in TTS with switchable voices (no extra plugin), bundled stickers, persona presets (voice + avatar + prompt), and persistent session memory. An independent fork of the official QQ bot plugin that can coexist with it.",
+    "detail": "docs/FEATURES.zh-CN.md"
   }
 }

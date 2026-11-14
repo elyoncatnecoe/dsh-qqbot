@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "QQ 机器人 (dsh-qqbot)",
-    "description": "在 QQ 私聊和群聊里直接对话 DeepSeek Harness。"
+    "title": "QQ 机器人 Plus",
+    "description": "在 QQ 私聊与群聊里对话：内置语音合成（可切换音色与变调，无需额外插件）、表情包套组、人格套装（音色+形象+prompt 联动）与会话记忆。基于官方 QQ 机器人插件的独立分支，可与它共存。",
+    "detail": "docs/FEATURES.zh-CN.md"
   }
 }
