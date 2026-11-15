@@ -92,6 +92,12 @@ prompts/           人格 prompt 模板（{{name}} 占位）
 docs/              安装、平台、特性、排错
 ```
 
+## 开发与发布
+
+发布前跑一次 `npm run check:bom`。
+
+**为什么要有这一步**：Windows 上某些编辑器和 `Set-Content -Encoding UTF8` 会悄悄写 UTF-8 BOM。`package.json` 开头多三个字节，JSON 就解析失败，插件管理器把包判成 `missing`，所有插件行都不加载——现象是「插件装好了却完全不生效」，而且没有明显报错。这个坑真踩过。
+
 ## License
 
 MIT。保留上游 `@tencent-connect/dsh-qqbot` 的版权声明，新增部分同样以 MIT 发布。

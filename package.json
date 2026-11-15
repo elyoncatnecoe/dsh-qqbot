@@ -1,75 +1,91 @@
 {
-  "name": "dsh-qqbot-plus",
-  "version": "0.1.0",
-  "icon": "./assets/icons/qq_logo.svg",
-  "description": "在 QQ 私聊和群聊里对话 DeepSeek Harness：内置语音（可切换音色）、表情包、人格套装与会话记忆。基于 @tencent-connect/dsh-qqbot 的独立分支。",
-  "type": "module",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./lib/index.d.ts",
-      "import": "./lib/index.js"
-    },
-    "./client": {
-      "default": "./lib/client.js"
-    },
-    "./locale/*.json": "./locale/*.json",
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "lib/",
-    "assets/",
-    "prompts/",
-    "locale/",
-    "docs/",
-    "cordis.patch.yml",
-    "README.md",
-    "README_EN.md",
-    "LICENSE"
-  ],
-  "keywords": [
-    "deepseek-harness",
-    "dsh",
-    "dsh-plugin",
-    "qqbot",
-    "qq",
-    "voice",
-    "tts"
-  ],
-  "license": "MIT",
-  "engines": {
-    "node": ">=20.3.0"
-  },
-  "dsh": {
-    "bundle": {
-      "patch": "./cordis.patch.yml"
-    },
-    "client": {
-      "platform": "web"
-    }
-  },
-  "dependencies": {
-    "@tencent-connect/qqbot-connector": "1.2.0",
-    "@tencent-connect/qqbot-nodejs": "^1.0.5",
-    "js-yaml": "^4.1.0",
-    "qrcode": "^1.5.4",
-    "yaml": "2.8.1"
-  },
-  "peerDependencies": {
-    "@deepseek-ai/cordis": ">=4.0.1",
-    "@deepseek-ai/dsh-agent": ">=0.1.0-rc.6",
-    "@deepseek-ai/dsh-llm": ">=0.1.0-rc.6",
-    "@deepseek-ai/dsh-session": ">=0.1.0-rc.6",
-    "@deepseek-ai/dsh-user-approval": ">=0.1.0-rc.6",
-    "@deepseek-ai/schemastery": ">=3.18.1"
-  },
-  "peerDependenciesMeta": {
-    "@deepseek-ai/cordis": { "optional": false },
-    "@deepseek-ai/schemastery": { "optional": false },
-    "@deepseek-ai/dsh-agent": { "optional": false },
-    "@deepseek-ai/dsh-session": { "optional": false },
-    "@deepseek-ai/dsh-llm": { "optional": false },
-    "@deepseek-ai/dsh-user-approval": { "optional": true }
-  }
+    "name":  "dsh-qqbot-plus",
+    "version":  "0.1.0",
+    "icon":  "./assets/icons/qq_logo.svg",
+    "description":  "在 QQ 私聊和群聊里对话 DeepSeek Harness：内置语音（可切换音色）、表情包、人格套装与会话记忆。基于 @tencent-connect/dsh-qqbot 的独立分支。",
+    "type":  "module",
+    "main":  "./lib/index.js",
+    "types":  "./lib/index.d.ts",
+    "exports":  {
+                    ".":  {
+                              "types":  "./lib/index.d.ts",
+                              "import":  "./lib/index.js"
+                          },
+                    "./client":  {
+                                     "default":  "./lib/client.js"
+                                 },
+                    "./locale/*.json":  "./locale/*.json",
+                    "./package.json":  "./package.json"
+                },
+    "files":  [
+                  "lib/",
+                  "assets/",
+                  "prompts/",
+                  "locale/",
+                  "docs/",
+                  "cordis.patch.yml",
+                  "README.md",
+                  "README_EN.md",
+                  "LICENSE",
+                  "scripts/"
+              ],
+    "keywords":  [
+                     "deepseek-harness",
+                     "dsh",
+                     "dsh-plugin",
+                     "qqbot",
+                     "qq",
+                     "voice",
+                     "tts"
+                 ],
+    "license":  "MIT",
+    "engines":  {
+                    "node":  "\u003e=20.3.0"
+                },
+    "dsh":  {
+                "bundle":  {
+                               "patch":  "./cordis.patch.yml"
+                           },
+                "client":  {
+                               "platform":  "web"
+                           }
+            },
+    "dependencies":  {
+                         "@tencent-connect/qqbot-connector":  "1.2.0",
+                         "@tencent-connect/qqbot-nodejs":  "^1.0.5",
+                         "js-yaml":  "^4.1.0",
+                         "qrcode":  "^1.5.4",
+                         "yaml":  "2.8.1"
+                     },
+    "peerDependencies":  {
+                             "@deepseek-ai/cordis":  "\u003e=4.0.1",
+                             "@deepseek-ai/dsh-agent":  "\u003e=0.1.0-rc.6",
+                             "@deepseek-ai/dsh-llm":  "\u003e=0.1.0-rc.6",
+                             "@deepseek-ai/dsh-session":  "\u003e=0.1.0-rc.6",
+                             "@deepseek-ai/dsh-user-approval":  "\u003e=0.1.0-rc.6",
+                             "@deepseek-ai/schemastery":  "\u003e=3.18.1"
+                         },
+    "peerDependenciesMeta":  {
+                                 "@deepseek-ai/cordis":  {
+                                                             "optional":  false
+                                                         },
+                                 "@deepseek-ai/schemastery":  {
+                                                                  "optional":  false
+                                                              },
+                                 "@deepseek-ai/dsh-agent":  {
+                                                                "optional":  false
+                                                            },
+                                 "@deepseek-ai/dsh-session":  {
+                                                                  "optional":  false
+                                                              },
+                                 "@deepseek-ai/dsh-llm":  {
+                                                              "optional":  false
+                                                          },
+                                 "@deepseek-ai/dsh-user-approval":  {
+                                                                        "optional":  true
+                                                                    }
+                             },
+    "scripts":  {
+                    "check:bom":  "node scripts/check-bom.mjs"
+                }
 }
