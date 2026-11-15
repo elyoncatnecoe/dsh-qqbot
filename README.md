@@ -94,9 +94,17 @@ docs/              安装、平台、特性、排错
 
 ## 开发与发布
 
-发布前跑一次 `npm run check:bom`。
+**发布流程**（三步，别省）：
 
-**为什么要有这一步**：Windows 上某些编辑器和 `Set-Content -Encoding UTF8` 会悄悄写 UTF-8 BOM。`package.json` 开头多三个字节，JSON 就解析失败，插件管理器把包判成 `missing`，所有插件行都不加载——现象是「插件装好了却完全不生效」，而且没有明显报错。这个坑真踩过。
+1. 改 `package.json` 的 `version`
+2. `npm run release:check` —— BOM 检查 + 脱敏检查 + 语法检查
+3. 提交并发 tag（如 `v0.1.1`）
+
+**为什么要 BOM 检查**：Windows 上某些编辑器和 `Set-Content -Encoding UTF8` 会悄悄写 UTF-8 BOM。`package.json` 开头多三个字节，JSON 就解析失败，插件管理器把包判成 `missing`，所有插件行都不加载——现象是「插件装好了却完全不生效」，而且没有明显报错。这个坑真踩过。
+
+**为什么要脱敏检查**：这个包是从线上实例 fork 的，容易把 appId / appSecret / openid / 本机路径带出去。检查会拦下这些模式。
+
+**公开版默认值刻意保守**：`proactive`（群内随机补话）默认 **关**、音色默认 **中性**。想开就在 profile 配置里覆盖，别改包里的默认值——否则等于替所有使用者做决定。
 
 ## License
 

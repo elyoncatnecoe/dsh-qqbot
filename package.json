@@ -1,6 +1,6 @@
 {
     "name":  "dsh-qqbot-plus",
-    "version":  "0.1.0",
+    "version":  "0.1.1",
     "icon":  "./assets/icons/qq_logo.svg",
     "description":  "在 QQ 私聊和群聊里对话 DeepSeek Harness：内置语音（可切换音色）、表情包、人格套装与会话记忆。基于 @tencent-connect/dsh-qqbot 的独立分支。",
     "type":  "module",
@@ -86,6 +86,7 @@
                                                                     }
                              },
     "scripts":  {
-                    "check:bom":  "node scripts/check-bom.mjs"
+                    "check:bom":  "node scripts/check-bom.mjs",
+                    "release:check":  "node scripts/check-bom.mjs \u0026\u0026 node scripts/check-sanitize.mjs"
                 }
 }
