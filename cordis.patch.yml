@@ -28,7 +28,7 @@
         voice:
           enabled: true
           voiceId: stella
-          semitones: -3     # 公开版默认中性；想萝莉改成 2
+          semitones: 2      # 萝莉（默认）；想中性改 -3，原声改 0
           mirrorToOwner: false
           maxChars: 300
         # ── 表情包：不填 dir 就用包内自带套组 ──
@@ -65,9 +65,9 @@
           firstChars: 60
           maxSegments: 3
           minIntervalMs: 800
-        # ── 被 @ 后在窗口内随机补几句（公开版默认关闭，避免装完就在别人群里自言自语）──
+        # ── 被 @ 后在窗口内随机补几句（默认开；不想让它自己发声就改 false）──
         proactive:
-          enabled: false
+          enabled: true
           minDelayMs: 30000
           maxDelayMs: 240000
           maxNudgesPerWindow: 3

@@ -70,7 +70,7 @@
 
 被 @ 之后，平台给 5 分钟/4-5 次的被动回复额度。这里在额度内随机补 1~3 句，让它像在继续聊。
 
-配置：`proactive.minDelayMs` / `maxDelayMs` / `maxNudgesPerWindow`。窗口一关自动停，不做越界尝试。**公开版默认 `enabled: false`**——装完不会在别人群里自己说话，想开再开。
+配置：`proactive.minDelayMs` / `maxDelayMs` / `maxNudgesPerWindow`。窗口一关自动停，不做越界尝试。默认开启（多数人希望装完就有点存在感）；不想让它自己发声就把 `proactive.enabled` 改成 `false`。
 
 ### 8. 定时主动私聊
 
